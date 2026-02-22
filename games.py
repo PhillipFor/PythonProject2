@@ -42,6 +42,14 @@ class Button:
 
         Bnd.objects.append(self)
 
+    def bncolor(self, nor, hov='#666666'):
+        self.fillColors['normal'] = nor
+        self.fillColors['hover'] = hov
+
+    def bntext(self,txt):
+        self.buttonSurf = font.render(txt, True, (20, 20, 20))
+
+
     def process(self):
 
         mousePos = pygame.mouse.get_pos()
@@ -76,6 +84,8 @@ def myFunction1():
 
 customButton1 = Button(30, 30, 400, 100, 'Button One (onePress)', myFunction)
 customButton2 = Button(30, 140, 400, 100, 'Button Two (multiPress)', myFunction1, 5)
+customButton2.bncolor('#ff0000')
+customButton2.bntext('hi')
 
 # Game loop.
 while True:
