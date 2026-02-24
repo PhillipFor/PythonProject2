@@ -1,15 +1,31 @@
-
 import sys
+import os
 import pygame
+from pygame.locals import *
+import configparser
+
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+
+pygame.init()
+
+font = pygame.font.SysFont('Arial', 24)
+
+
+class bs:
+    screen = None
+    screen_width = 1000
+    screen_height = 900
+    sizecell = 10
+    clock = pygame.time.Clock()
 
 # Configuration
-pygame.init()
-fps = 60
-fpsClock = pygame.time.Clock()
-width, height = 1000, 900
-screen = pygame.display.set_mode((width, height))
-
-font = pygame.font.SysFont('Arial', 40)
+def main():
+    bs.screen =  pygame.display.set_mode((bs.screen_width, bs.screen_height))
+    VersionPF()
+    pygame.display.set_caption('Version' + VersionPF.version + ' ' + VersionPF.date )
+    #pygame.display.set_allow_screensaver(True)
+    icon = pygame.image.load("img/icon.png")
+    pygame.display.set_icon(icon)
 
 
 
@@ -26,6 +42,7 @@ class Button:
         self.height = height
         self.onclickFunction = onclickFunction
         self.val = val
+        self.font = pygame.font.SysFont('Arial', 24)
 
         self.fillColors = {
             'normal': '#ffffff',
@@ -36,7 +53,7 @@ class Button:
         self.buttonSurface = pygame.Surface((self.width, self.height))
         self.buttonRect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-        self.buttonSurf = font.render(buttonText, True, (20, 20, 20))
+        self.buttonSurf = self.font.render(buttonText, True, (20, 20, 20))
 
         self.alreadyPressed = False
 
@@ -47,7 +64,7 @@ class Button:
         self.fillColors['hover'] = hov
 
     def bntext(self,txt):
-        self.buttonSurf = font.render(txt, True, (20, 20, 20))
+        self.buttonSurf = self.font.render(txt, True, (20, 20, 20))
 
 
     def process(self):
@@ -73,7 +90,7 @@ class Button:
             self.buttonRect.width/2 - self.buttonSurf.get_rect().width/2,
             self.buttonRect.height/2 - self.buttonSurf.get_rect().height/2
         ])
-        screen.blit(self.buttonSurface, self.buttonRect)
+        bs.screen.blit(self.buttonSurface, self.buttonRect)
 
 def myFunction():
     print('Button Pressed')
@@ -82,27 +99,45 @@ def myFunction1():
     aa = Bnd.objectsval
     print('Button --- Pressed' + str(aa))
 
-customButton1 = Button(30, 30, 400, 100, 'Button One (onePress)', myFunction)
-customButton2 = Button(30, 140, 400, 100, 'Button Two (multiPress)', myFunction1, 5)
-customButton2.bncolor('#ff0000')
-customButton2.bntext('hi')
+
 
 # Game loop.
-while True:
-    screen.fill((20, 20, 20))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+class game:
+    def start(self):
+        customButton1 = Button(30, 30, 400, 100, 'Button One (onePress)', myFunction)
+        customButton2 = Button(30, 140, 400, 100, 'Button Two (multiPress)', myFunction1, 5)
+        customButton2.bncolor('#ff0000')
+        customButton2.bntext('hi')
 
-    for a in Bnd.objects:
-        a.process()
 
-    pygame.display.flip()
-    fpsClock.tick(fps)
+
+        while True:
+            bs.screen.fill((20, 20, 20))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            for a in Bnd.objects:
+                a.process()
+
+            pygame.display.flip()
+            bs.clock.tick(60)
+
+
+
+
 
 
 class VersionPF:
-    number = '0.01'
+
+    version = '0.01'
     date = '21 Feb 265'
     text = 'start'
+
+
+if __name__ == '__main__':
+    main()
+
+
+
