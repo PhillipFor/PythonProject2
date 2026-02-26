@@ -27,7 +27,9 @@ def main():
     icon = pygame.image.load("img/icon.png")
     pygame.display.set_icon(icon)
 
-
+    board = Board(bs.screen)
+    gsm = Game(board)
+    pass
 
 class Bnd:
     objects = []
@@ -93,24 +95,35 @@ class Button:
         bs.screen.blit(self.buttonSurface, self.buttonRect)
 
 def myFunction():
-    print('Button Pressed')
+    pygame.quit()
+    sys.exit()
 
-def myFunction1():
-    aa = Bnd.objectsval
-    print('Button --- Pressed' + str(aa))
+
+def Game1():
+    Button.customButton2.bncolor('#00ff00')
+    Button.customButton2.bntext('Reset game 1')
+    Button.customButton3.bncolor('#ffffff')
+    Button.customButton3.bntext('Game 2')
+
+def Game2():
+    Button.customButton3.bncolor('#00ff00')
+    Button.customButton3.bntext('Reset game 2')
+    Button.customButton2.bncolor('#ffffff')
+    Button.customButton2.bntext('Game 1')
+
 
 
 
 # Game loop.
-class game:
-    def start(self):
-        customButton1 = Button(30, 30, 400, 100, 'Button One (onePress)', myFunction)
-        customButton2 = Button(30, 140, 400, 100, 'Button Two (multiPress)', myFunction1, 5)
-        customButton2.bncolor('#ff0000')
-        customButton2.bntext('hi')
+class Board:
+    def __init__(self, screen):
 
+        customButton1 = Button(bs.screen_width - 100 - 50, 30, 100, 30, 'Exit', myFunction)
+        Button.customButton2 = Button(50, 30, 150, 30, 'Game 1', Game1)
+        Button.customButton3 = Button(250, 30, 150, 30, 'Game 2', Game2)
 
-
+class Game:
+    def __init__(self, screen):
         while True:
             bs.screen.fill((20, 20, 20))
             for event in pygame.event.get():
@@ -132,9 +145,12 @@ class game:
 class VersionPF:
 
     version = '0.01'
-    date = '21 Feb 265'
-    text = 'start'
-
+    date = '24 Feb 2026'
+    text = 'Games - start'
+    '''
+    0,00 21 Feb 2026 Games - start
+    
+    '''
 
 if __name__ == '__main__':
     main()
