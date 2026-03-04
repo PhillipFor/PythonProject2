@@ -17,19 +17,31 @@ class bs:
     screen_height = 900
     sizecell = 10
     clock = pygame.time.Clock()
+    thegame = 0
 
 # Configuration
 def main():
     bs.screen =  pygame.display.set_mode((bs.screen_width, bs.screen_height))
     VersionPF()
-    pygame.display.set_caption('Version' + VersionPF.version + ' ' + VersionPF.date )
+    pygame.display.set_caption('Version ' + VersionPF.version + ' ' + VersionPF.date + '  ' + VersionPF.text)
     #pygame.display.set_allow_screensaver(True)
     icon = pygame.image.load("img/icon.png")
     pygame.display.set_icon(icon)
 
+    Which()
+    stop()
+
     board = Board(bs.screen)
     gsm = Game(board)
     pass
+
+def stop():
+      while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
 
 class Bnd:
     objects = []
@@ -45,10 +57,11 @@ class Button:
         self.onclickFunction = onclickFunction
         self.val = val
         self.font = pygame.font.SysFont('Arial', 24)
-
+        self.act = True
+        self.col = '#000000'
         self.fillColors = {
             'normal': '#ffffff',
-            'hover': '#666666',
+            'hover': '#aaaaaa',
             'pressed': '#333333',
         }
 
@@ -61,32 +74,43 @@ class Button:
 
         Bnd.objects.append(self)
 
-    def bncolor(self, nor, hov='#666666'):
-        self.fillColors['normal'] = nor
-        self.fillColors['hover'] = hov
+    def bncolor(self, nor='#ffffff', hov='#aaaaaa', pres='#333333'):
+        if nor != '':
+            self.fillColors['normal'] = nor
+        if hov != '':
+            self.fillColors['hover'] = hov
+        if pres != '':
+            self.fillColors['pressed'] = pres
 
     def bntext(self,txt):
         self.buttonSurf = self.font.render(txt, True, (20, 20, 20))
 
+    def active(self, val, col=''):
+        self.act = val
+        if col != '':
+            self.col = col
+        self.process()
 
     def process(self):
+        if not self.act:
+            self.buttonSurface.fill(self.col)
+        else:
+            mousePos = pygame.mouse.get_pos()
 
-        mousePos = pygame.mouse.get_pos()
+            self.buttonSurface.fill(self.fillColors['normal'])
+            if self.buttonRect.collidepoint(mousePos):
+                self.buttonSurface.fill(self.fillColors['hover'])
 
-        self.buttonSurface.fill(self.fillColors['normal'])
-        if self.buttonRect.collidepoint(mousePos):
-            self.buttonSurface.fill(self.fillColors['hover'])
+                if pygame.mouse.get_pressed(num_buttons=3)[0]:
+                    self.buttonSurface.fill(self.fillColors['pressed'])
 
-            if pygame.mouse.get_pressed(num_buttons=3)[0]:
-                self.buttonSurface.fill(self.fillColors['pressed'])
+                    if not self.alreadyPressed:
+                        Bnd.objectsval = self.val
+                        self.onclickFunction()
+                        self.alreadyPressed = True
 
-                if not self.alreadyPressed:
-                    Bnd.objectsval = self.val
-                    self.onclickFunction()
-                    self.alreadyPressed = True
-
-            else:
-                self.alreadyPressed = False
+                else:
+                    self.alreadyPressed = False
 
         self.buttonSurface.blit(self.buttonSurf, [
             self.buttonRect.width/2 - self.buttonSurf.get_rect().width/2,
@@ -99,28 +123,41 @@ def myFunction():
     sys.exit()
 
 
-def Game1():
-    Button.customButton2.bncolor('#00ff00')
-    Button.customButton2.bntext('Reset game 1')
-    Button.customButton3.bncolor('#ffffff')
-    Button.customButton3.bntext('Game 2')
-
-def Game2():
-    Button.customButton3.bncolor('#00ff00')
-    Button.customButton3.bntext('Reset game 2')
-    Button.customButton2.bncolor('#ffffff')
-    Button.customButton2.bntext('Game 1')
+def ggame():
+    bs.thegame = Bnd.objectsval
+    Button.customButton2.active(False)
+    Button.customButton3.active(False)
 
 
+def Which():
+    customButton1 = Button(bs.screen_width - 100 - 50, 30, 50, 30, 'Exit', myFunction)
+    Button.customButton2 = Button(50, 30, 150, 30, 'Game 1', ggame, 1)
+    Button.customButton2.bncolor('', '#aaffaa', '#00ff00')
+    Button.customButton3 = Button(250, 30, 150, 30, 'Game 2', ggame, 2)
+    Button.customButton3.bncolor('', '#aaffaa', '#00ff00')
+    Bnd.objectsval = 0
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        if bs.thegame != 0:
+            break
+        for a in Bnd.objects:
+            a.process()
+
+        pygame.display.flip()
+        bs.clock.tick(60)
 
 
 # Game loop.
 class Board:
     def __init__(self, screen):
 
-        customButton1 = Button(bs.screen_width - 100 - 50, 30, 100, 30, 'Exit', myFunction)
-        Button.customButton2 = Button(50, 30, 150, 30, 'Game 1', Game1)
-        Button.customButton3 = Button(250, 30, 150, 30, 'Game 2', Game2)
+        pass
+
+
 
 class Game:
     def __init__(self, screen):
@@ -145,7 +182,7 @@ class Game:
 class VersionPF:
 
     version = '0.01'
-    date = '24 Feb 2026'
+    date = '4 Mar 2026'
     text = 'Games - start'
     '''
     0,00 21 Feb 2026 Games - start
