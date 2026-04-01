@@ -1,11 +1,10 @@
 import sys
 import os
 import pygame
-from Surface import Background
 
 from Button import Button
 from Button import Bnd
-from pygame.locals import *
+
 #import configparser
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -16,10 +15,9 @@ font = pygame.font.SysFont('Arial', 24)
 
 
 class bs:
-    screen = None
-    screen_width = 1000
-    screen_height = 900
-    area = pygame.Surface((800, 800))
+    screen_width = 800
+    screen_height = 600
+
     sizecell = 10
     clock = pygame.time.Clock()
     thegame = 0
@@ -34,12 +32,22 @@ def main():
     pygame.display.set_icon(icon)
 
     Which()
-    bs.bkground = pygame.Surface((900, 900))
-    pygame.Surface.fill(bs.bkground, pygame.Color('white'))
+    bs.canvas = pygame.Surface((11 * 11, 11 * 11))
+    bs.canvas = pygame.Surface.fill(bs.canvas, pygame.Color('white'))
 
-    aaa = Background( bs.screen, bs.area)
 
-    bbb = aaa.center(int(400), int(400))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+
+
+        pygame.display.flip()
+        bs.clock.tick(60)
+
+
 
     board = Board(bs.screen)
     board.draw()
@@ -64,12 +72,15 @@ def myFunction():
 
 def ggame():
     bs.thegame = Bnd.objectsval
-    Button.customButton2.active(False)
+    (Button.
+
+
+    customButton2.active(False))
     Button.customButton3.active(False)
 
 
 def Which():
-    customButton1 = Button(bs.screen,bs.screen_width - 100 - 50, 30, 50, 30, 'Exit', myFunction)
+    Button(bs.screen,bs.screen_width - 100 - 50, 30, 50, 30, 'Exit', myFunction)
     Button.customButton2 = Button(bs.screen, 50, 30, 150, 30, 'Game 1', ggame, 1)
     Button.customButton2.bncolor('', '#aaffaa', '#00ff00')
     Button.customButton3 = Button(bs.screen, 250, 30, 150, 30, 'Game 2', ggame, 2)
@@ -117,13 +128,11 @@ class Game:
 
 class VersionPF:
     version = '0.01'
-    date = '5 Mar 2026'
-    text = 'Games - start board'
-'''   
+    date = '1 Apr 2026'
+    text = 'Games - start over'
+    '''
+
     0.00 21 Feb 2026 Games - start
-    
 '''
 if __name__ == '__main__':
-    main()
-
-
+   main()
