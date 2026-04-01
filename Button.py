@@ -44,7 +44,7 @@ class Button:
 	def bntext(self,txt):
 		self.buttonSurf = self.font.render(txt, True, (20, 20, 20))
 
-	def active(self, val, col=''):
+	def act(self, val, col=''):
 		self.act = val
 		if col != '':
 			self.col = col
