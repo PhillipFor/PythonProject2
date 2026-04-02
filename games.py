@@ -18,7 +18,7 @@ class bs:
     screen_width = 800
     screen_height = 600
     screen = 0
-    sizecell = 10
+    sizecell = 11
     clock = pygame.time.Clock()
     thegame = 0
     customButton2 = 0
@@ -32,31 +32,35 @@ def main():
     #pygame.display.set_allow_screensaver(True)
     icon = pygame.image.load("img/icon.png")
     pygame.display.set_icon(icon)
+    canvas = pygame.Surface((bs.screen_width, bs.screen_height))
+
+    bg = pygame.image.load("img/background.png")
+
+
+
+    bs.screen.blit(bg,(0, 0))
+    pygame.display.flip()
 
     Which()
 
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-
-
-        pygame.display.flip()
-        bs.clock.tick(60)
 
 
 def myFunction():
     pygame.quit()
     sys.exit()
 
+def ggame():
+    bs.thegame = Bnd.objectsval
+    bs.customButton2.bnact(False)
+    bs.customButton3.bnact(False)
+    if bs.thegame == 1:
+        aa = Game(bs.screen)
+
 
 
 def Which():
     Button(bs.screen,bs.screen_width - 100 - 50, 30, 50, 30, 'Exit', myFunction)
-    bs.customButton2 = Button(bs.screen, 50, 30, 150, 30, 'Game 1', ggame, 1)
+    bs.customButton2 = Button(bs.screen, 50, 30, 150, 30, 'Game 1', ggame , 1)
     bs.customButton2.bncolor('', '#aaffaa', '#00ff00')
     bs.customButton3 = Button(bs.screen, 250, 30, 150, 30, 'Game 2', ggame, 2)
     bs.customButton3.bncolor('', '#aaffaa', '#00ff00')
@@ -67,18 +71,19 @@ def Which():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-        if bs.thegame != 0:
-            break
+
         for a in Bnd.objects:
             a.process()
+        if bs.thegame != 0:
+            break
 
         pygame.display.flip()
         bs.clock.tick(60)
 
-def ggame():
-    bs.thegame = Bnd.objectsval
-    bs.customButton2.act(False)
-    bs.customButton3.act(False)
+if bs.thegame == 1:
+    ggame()
+    sys.exit()
+
 
 
 
@@ -100,8 +105,6 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
-            for a in Bnd.objects:
-                a.process()
 
                 pygame.display.flip()
                 bs.clock.tick(60)
