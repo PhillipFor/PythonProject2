@@ -148,6 +148,8 @@ class Background():
 
 		col2 = ((self.stagePosX + self.tileWidth) % (self.tileWidth * len(self.tiles[0]))) // self.tileWidth
 		row2 = ((self.stagePosY + self.tileHeight) % (self.tileHeight * len(self.tiles))) // self.tileHeight
+		print(col, col2, row,  row2, xOff, yOff)
+
 		self.screen.blit(self.tiles[row][col], [xOff, yOff])
 		self.screen.blit(self.tiles[row][col2], [xOff + self.tileWidth, yOff])
 		self.screen.blit(self.tiles[row2][col], [xOff, yOff + self.tileHeight])
@@ -161,18 +163,26 @@ class Game:
 	def display(self):
 		self.canvas = pygame.Surface((c.screen_width * 2, c.screen_height * 2))
 
-		self.playerX = 0
-		self.playerY = 0
+		self.playerX = 400
+		self.playerY = 400
 		bg = Background(self.screen)
-		bg.setTiles("test.png")
+
+
+
+		bg.setTiles( [ ["test.png", "test.png"],
+		                    ["test.png", "test.png"]])
 
 
 
 		while True:
+			self.screen.fill(pygame.Color("black"))
 
 			bg.scroll(self.playerX, self.playerY)
-			self.playerX += 5
-			self.playerY += 1
+			self.playerX += -10
+			self.playerY += -1
+			print(self.playerX, self.playerY)
+
+
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					pygame.quit()
@@ -184,7 +194,7 @@ class Game:
 
 class VersionPF:
 	version = '0.01'
-	date = '4 Apr 2026'
+	date = '5 Apr 2026'
 	text = 'Games - start over'
 	'''
 	0.00 1 Apr 2026 Games - start
