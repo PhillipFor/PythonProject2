@@ -6,7 +6,7 @@ class VersionPF:
 	text = 'Game - no edges'
 	'''
 	version
-	try 3
+	try 4
 	0.00 1 Apr 2026 Games - start
 	'''
 
@@ -16,7 +16,7 @@ import pygame
 import math
 
 pygame.init()
-screen = pygame.display.set_mode((800, 800))
+screen = pygame.display.set_mode((600, 400))
 pygame.display.set_caption("3")
 screen.fill((255, 255, 255))
 clock = pygame.time.Clock()
@@ -56,75 +56,70 @@ class Bullet:
 
 class Player:
 	def __init__(self):
-		self.x = canvas.get_rect().width / 2
-		self.y = canvas.get_rect().height / 2
+		self.y = canvas.get_rect().width / 2
+		self.x = canvas.get_rect().height  / 2
 		self.a = 0
 
 	def update(self):
-		self.y = self.y
-
 		#if self.a == 0:
 		#	self.a = 1
 		#else:
 		#	self.a = 0
-		self.x += -1
+		self.x += 1
 		return self.x, self.y
 
 
 
 class Screen1:
 	def __init__(self):
-		self.scr2 = screen.get_rect().height // 2
-		self.scr1 = screen.get_rect().height
-		self.bt = canvas.get_rect().height - self.scr1
-		self.tp = canvas.get_rect().height + self.scr1
 		pass
 
 
 	def show(self,  x, y):
-		if x > canvas.get_rect().height:
-			x = 0
-			pass
-		if x < 0:
-			x = canvas.get_rect().height
-			pass
-		if y > canvas.get_rect().width:
-			pass
-		if y < 0:
-			pass
-		sw = 0
-		botcnt = 0
-		left = y - self.scr2
-		top = x - self.scr2
+
+		left = y
+		top = x
+
+
 		w = screen.get_rect().width
 		h = screen.get_rect().height
+		if top == -screen.get_rect().height:
+			top = canvas.get_rect().height
+		if top < 0:
+			cnt = -top
 
-		if self.bt < top:
-			cnt = (self.bt - top)
-			h += cnt
-			hh = -cnt
-			z = screen.get_rect().height + cnt
-			toph = 0
-			crop_rect = pygame.Rect(left, toph, w, hh)
-			cropped_image1 = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image1, (0, z))
+			hh = cnt
+			bh =  canvas.get_rect().height - cnt
 
-		if 0 > top:
-			cnt = (self.bt - top)
-			h  += cnt
-			hh = -cnt
-			z = screen.get_rect().height + cnt
-			toph = 0
-			crop_rect = pygame.Rect(left, toph, w, hh)
-			cropped_image1 = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image1, (0, z))
+			crop_rect = pygame.Rect(left, bh, w, hh)
+			cropped_image = canvas.subsurface(crop_rect)
+			screen.blit(cropped_image, (0, 0))
+
+			ch = h - cnt
+			top = 0
+
+			crop_rect = pygame.Rect(left, top, w, ch)
+			cropped_image = canvas.subsurface(crop_rect)
+			screen.blit(cropped_image, (0, cnt))
+
+		elif top > (canvas.get_rect().height - screen.get_rect().height):
+			cnt = top - (canvas.get_rect().height - screen.get_rect().height)
+
+			bt = 0
+
+			crop_rect = pygame.Rect(left, bt, w, cnt)
+			cropped_image = canvas.subsurface(crop_rect)
+			screen.blit(cropped_image, (0, 0))
+
+			crop_rect = pygame.Rect(left, top, w, h)
+			#cropped_image = canvas.subsurface(crop_rect)
+			#screen.blit(cropped_image, (0, 0))
 
 
-
-
-		crop_rect = pygame.Rect(left, top, w, h)
-		cropped_image = canvas.subsurface(crop_rect)
-		screen.blit(cropped_image, (0, 0))
+		else:
+			crop_rect = pygame.Rect(left, top, w, h)
+			cropped_image = canvas.subsurface(crop_rect)
+			screen.blit(cropped_image, (0, 0))
 
 
 
@@ -150,24 +145,24 @@ bullet = None
 bullets = []
 auto_shoot = False
 run = True
+
 while run:
-	x, y  = pygame.mouse.get_pos()
-	x = x - 400
-	y = y - 400
-	angle = math.degrees(math.atan2(-y, x))
+	#x, y  = pygame.mouse.get_pos()
+
+	angle = math.degrees(math.atan2(-player.y, player.x))
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
 		if event.type == pygame.MOUSEBUTTONUP:
-			pythag = float(math.sqrt(x ** 2 + y ** 2))
-			bullets.append(Bullet(x / pythag, y / pythag, 400, 400))
+			pythag = float(math.sqrt(player.x ** 2 + player.y ** 2))
+			bullets.append(Bullet(player.x / pythag, player.y / pythag, screen.get_rect().height // 2, screen.get_rect().width // 2))
 
 	screen.fill((255, 255, 255))
-	x, y = player.update()
-	place.show(x, y)
+	player.update()
+	place.show(player.x, player.y)
 	#for bullet in bullets:
 	#	bullet.update()
-	blitRotateCenter(screen, cannon, (400, 400), angle)
+	#blitRotateCenter(screen, cannon, (400, 400), angle)
 	pygame.display.update()
 	clock.tick(50)
 
