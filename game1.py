@@ -85,6 +85,7 @@ class Screen1:
 		h = screen.get_rect().height
 		if top == -screen.get_rect().height:
 			top = canvas.get_rect().height
+
 		if top < 0:
 			cnt = -top
 
@@ -106,14 +107,17 @@ class Screen1:
 			cnt = top - (canvas.get_rect().height - screen.get_rect().height)
 
 			bt = 0
+			zz = screen.get_rect().height - cnt
 
 			crop_rect = pygame.Rect(left, bt, w, cnt)
 			cropped_image = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image, (0, 0))
+			screen.blit(cropped_image, (0, zz))
+
+			h = zz
 
 			crop_rect = pygame.Rect(left, top, w, h)
-			#cropped_image = canvas.subsurface(crop_rect)
-			#screen.blit(cropped_image, (0, 0))
+			cropped_image = canvas.subsurface(crop_rect)
+			screen.blit(cropped_image, (0, 0))
 
 
 		else:
