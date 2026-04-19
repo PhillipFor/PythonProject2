@@ -1,13 +1,14 @@
 # Version
 #0.00
 class VersionPF:
-	version = '0.01'
-	date = '14 Apr 2026'
+	version = '0.02'
+	date = '18 Apr 26'
+	ver = 'horizontal'
 	text = 'Game - no edges'
 	'''
 	version
-	try 4
-	0.00 1 Apr 2026 Games - start
+	0.01 17 Apr 26 try 4
+	0.00 1 Apr 26 Games - start
 	'''
 
 
@@ -17,12 +18,11 @@ import math
 
 pygame.init()
 screen = pygame.display.set_mode((600, 400))
-pygame.display.set_caption("3")
 screen.fill((255, 255, 255))
 clock = pygame.time.Clock()
 
 VersionPF()
-pygame.display.set_caption('Version ' + VersionPF.version + ' ' + VersionPF.date + '  ' + VersionPF.text)
+pygame.display.set_caption('Version ' + VersionPF.version + ' ' + VersionPF.date + '  ' + VersionPF.text + ', ' + VersionPF.ver)
 pygame.display.set_allow_screensaver(True)
 icon = pygame.image.load("img/icon.png")
 pygame.display.set_icon(icon)
@@ -56,7 +56,8 @@ class Bullet:
 
 class Player:
 	def __init__(self):
-		self.y = canvas.get_rect().width / 2
+		self.y = 600
+		#  canvas.get_rect().width # / 2
 		self.x = canvas.get_rect().height  / 2
 		self.a = 0
 
@@ -65,7 +66,7 @@ class Player:
 		#	self.a = 1
 		#else:
 		#	self.a = 0
-		self.x += 1
+		self.y += -1
 		return self.x, self.y
 
 
@@ -75,17 +76,59 @@ class Screen1:
 		pass
 
 
-	def show(self,  x, y):
+	def show(self):
 
-		left = y
-		top = x
+		left = player.y
+		top = player.x
 
 
 		w = screen.get_rect().width
 		h = screen.get_rect().height
-		if top == -screen.get_rect().height:
-			top = canvas.get_rect().height
 
+
+
+
+		if top == -screen.get_rect().height:
+			top = top + canvas.get_rect().height
+			player.x = top
+		if top > canvas.get_rect().height:
+			top = top - canvas.get_rect().height
+			player.x = top
+
+		if left == -screen.get_rect().width:
+			left = left + canvas.get_rect().width
+			player.y = left
+		if left > canvas.get_rect().width:
+			left = left - canvas.get_rect().width
+			player.y = left
+
+
+######################################################
+		right = 0
+		rdl = 0
+
+		if top < 0:
+			top = 0
+		if left < 0:
+			c = abs(left)
+			right = canvas.get_rect().width - c
+			wr = c
+			left = 0
+			w = w - c
+			rdl = c
+
+		crop_rect = pygame.Rect(left, top, w, h)
+		cropped_image = canvas.subsurface(crop_rect)
+		screen.blit(cropped_image, (rdl, 0))
+
+		if right != 0:
+			crop_rect = pygame.Rect(right, top, wr, h)
+			cropped_image = canvas.subsurface(crop_rect)
+			screen.blit(cropped_image, (0, 0))
+
+
+		##############################################
+		'''
 		if top < 0:
 			cnt = -top
 
@@ -125,7 +168,7 @@ class Screen1:
 			cropped_image = canvas.subsurface(crop_rect)
 			screen.blit(cropped_image, (0, 0))
 
-
+'''
 
 
 
@@ -163,7 +206,7 @@ while run:
 
 	screen.fill((255, 255, 255))
 	player.update()
-	place.show(player.x, player.y)
+	place.show()
 	#for bullet in bullets:
 	#	bullet.update()
 	#blitRotateCenter(screen, cannon, (400, 400), angle)
