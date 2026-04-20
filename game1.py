@@ -2,7 +2,7 @@
 #0.00
 class VersionPF:
 	version = '0.02'
-	date = '18 Apr 26'
+	date = '20 Apr 26'
 	ver = 'horizontal'
 	text = 'Game - no edges'
 	'''
@@ -56,8 +56,7 @@ class Bullet:
 
 class Player:
 	def __init__(self):
-		self.y = 600
-		#  canvas.get_rect().width # / 2
+		self.y = canvas.get_rect().width  / 2
 		self.x = canvas.get_rect().height  / 2
 		self.a = 0
 
@@ -66,7 +65,7 @@ class Player:
 		#	self.a = 1
 		#else:
 		#	self.a = 0
-		self.y += -1
+		self.y += 1
 		return self.x, self.y
 
 
@@ -82,7 +81,7 @@ class Screen1:
 		top = player.x
 
 
-		w = screen.get_rect().width
+		w = wc = wr = screen.get_rect().width
 		h = screen.get_rect().height
 
 
@@ -106,22 +105,38 @@ class Screen1:
 ######################################################
 		right = 0
 		rdl = 0
+		edge = False
+
 
 		if top < 0:
 			top = 0
 		if left < 0:
 			c = abs(left)
+			left = 0
+			w = wc - c
 			right = canvas.get_rect().width - c
 			wr = c
-			left = 0
-			w = w - c
 			rdl = c
+
+			edge = True
+
+		if left > (canvas.get_rect().width - screen.get_rect().width):
+			c = left - (canvas.get_rect().width - screen.get_rect().width)
+			left =  0
+			w =   c
+			rdl = screen.get_rect().width - c
+			####
+			right = canvas.get_rect().width - screen.get_rect().width + c
+			wr = wc - c
+
+
+			edge = True
 
 		crop_rect = pygame.Rect(left, top, w, h)
 		cropped_image = canvas.subsurface(crop_rect)
 		screen.blit(cropped_image, (rdl, 0))
 
-		if right != 0:
+		if edge:
 			crop_rect = pygame.Rect(right, top, wr, h)
 			cropped_image = canvas.subsurface(crop_rect)
 			screen.blit(cropped_image, (0, 0))
