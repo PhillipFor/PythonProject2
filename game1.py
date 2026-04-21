@@ -1,12 +1,13 @@
 # Version
 #0.00
 class VersionPF:
-	version = '0.02'
+	version = '0.03'
 	date = '20 Apr 26'
-	ver = 'horizontal'
+	ver = 'try some else'
 	text = 'Game - no edges'
 	'''
 	version
+	0.02 20 Apr 26 horizontal'
 	0.01 17 Apr 26 try 4
 	0.00 1 Apr 26 Games - start
 	'''
@@ -79,111 +80,6 @@ class Screen1:
 
 		left = player.y
 		top = player.x
-
-
-		w = wc = wr = screen.get_rect().width
-		h = screen.get_rect().height
-
-
-
-
-		if top == -screen.get_rect().height:
-			top = top + canvas.get_rect().height
-			player.x = top
-		if top > canvas.get_rect().height:
-			top = top - canvas.get_rect().height
-			player.x = top
-
-		if left == -screen.get_rect().width:
-			left = left + canvas.get_rect().width
-			player.y = left
-		if left > canvas.get_rect().width:
-			left = left - canvas.get_rect().width
-			player.y = left
-
-
-######################################################
-		right = 0
-		rdl = 0
-		edge = False
-
-
-		if top < 0:
-			top = 0
-		if left < 0:
-			c = abs(left)
-			left = 0
-			w = wc - c
-			right = canvas.get_rect().width - c
-			wr = c
-			rdl = c
-
-			edge = True
-
-		if left > (canvas.get_rect().width - screen.get_rect().width):
-			c = left - (canvas.get_rect().width - screen.get_rect().width)
-			left =  0
-			w =   c
-			rdl = screen.get_rect().width - c
-			####
-			right = canvas.get_rect().width - screen.get_rect().width + c
-			wr = wc - c
-
-
-			edge = True
-
-		crop_rect = pygame.Rect(left, top, w, h)
-		cropped_image = canvas.subsurface(crop_rect)
-		screen.blit(cropped_image, (rdl, 0))
-
-		if edge:
-			crop_rect = pygame.Rect(right, top, wr, h)
-			cropped_image = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image, (0, 0))
-
-
-		##############################################
-		'''
-		if top < 0:
-			cnt = -top
-
-			hh = cnt
-			bh =  canvas.get_rect().height - cnt
-
-			crop_rect = pygame.Rect(left, bh, w, hh)
-			cropped_image = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image, (0, 0))
-
-			ch = h - cnt
-			top = 0
-
-			crop_rect = pygame.Rect(left, top, w, ch)
-			cropped_image = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image, (0, cnt))
-
-		elif top > (canvas.get_rect().height - screen.get_rect().height):
-			cnt = top - (canvas.get_rect().height - screen.get_rect().height)
-
-			bt = 0
-			zz = screen.get_rect().height - cnt
-
-			crop_rect = pygame.Rect(left, bt, w, cnt)
-			cropped_image = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image, (0, zz))
-
-			h = zz
-
-			crop_rect = pygame.Rect(left, top, w, h)
-			cropped_image = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image, (0, 0))
-
-
-		else:
-			crop_rect = pygame.Rect(left, top, w, h)
-			cropped_image = canvas.subsurface(crop_rect)
-			screen.blit(cropped_image, (0, 0))
-
-'''
 
 
 
