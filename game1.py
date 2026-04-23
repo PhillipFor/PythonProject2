@@ -62,11 +62,12 @@ class Player:
 		self.a = 0
 
 	def update(self):
-		#if self.a == 0:
-		#	self.a = 1
-		#else:
-		#	self.a = 0
-		self.y += 1
+		if self.a == 1:
+			self.a = 0
+		else:
+			self.a = 1
+			self.x += 1
+		self.y += -1
 		return self.x, self.y
 
 
@@ -78,11 +79,30 @@ class Screen1:
 
 	def show(self):
 
-		left = player.y
-		top = player.x
+		left = player.x
+		top = player.y
+
+
+		h = screen.get_rect().height
+		w = screen.get_rect().width
+
+		if top + screen.get_rect().height == canvas.get_rect().height:
+			player.y = top = 0
+
+		if left + screen.get_rect().width == canvas.get_rect().width:
+			player.x = left = 0
+
+		if top == -1:
+			player.y = top = canvas.get_rect().height - screen.get_rect().height - 1
+
+		if left == -1:
+			player.x = left = canvas.get_rect().width - screen.get_rect().width - 1
 
 
 
+		cropped_rect = pygame.Rect(left, top, w, h)
+		cropped_image = canvas.subsurface(cropped_rect)
+		screen.blit(cropped_image, (0, 0))
 
 
 
@@ -92,6 +112,11 @@ def blitRotateCenter(surf, image, center, angle):
 	surf.blit(rotated_image, new_rect)
 
 
+	
+'''
+Q: How do I keep the center of a rotated image in place in Pygame
+ANS: To keep the center of a rotated image in place, you need to get the center coordinate of the original image’s rectangle and apply that same center coordinate to the rectangle of the newly rotated image before blitting.
+'''
 
 cannon = pygame.Surface((50, 50), pygame.SRCALPHA)
 pygame.draw.rect(cannon, (100, 100, 100), (30, 17, 25, 15))
@@ -120,7 +145,7 @@ while run:
 	place.show()
 	#for bullet in bullets:
 	#	bullet.update()
-	#blitRotateCenter(screen, cannon, (400, 400), angle)
+	blitRotateCenter(screen, cannon, (400, 400), angle)
 	pygame.display.update()
 	clock.tick(50)
 
