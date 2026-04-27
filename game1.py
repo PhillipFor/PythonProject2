@@ -2,8 +2,8 @@
 #0.00
 class VersionPF:
 	version = '0.03'
-	date = '20 Apr 26'
-	ver = 'try some else'
+	date = '26 Apr 26'
+	ver = 'try something else'
 	text = 'Game - no edges'
 	'''
 	version
@@ -49,25 +49,28 @@ class Bullet:
 		self.y_loc += self.y_move
 		self.bullet_rect.center = round(self.x_loc), round(self.y_loc)
 		rect = screen.blit(self.image, self.bullet_rect)
-		if not screen.get_rect().contains(rect):
-			bullets.remove(self)
-		if self.x_loc > 800 or self.y_loc > 800:
-			bullets.remove(self)
+		if not canvas.get_rect().contains(rect):
+			pass
+		#	bullets.remove(self)
 
 
 class Player:
 	def __init__(self):
-		self.y = canvas.get_rect().width  / 2
-		self.x = canvas.get_rect().height  / 2
+		self.x = canvas.get_rect().width  / 2
+		self.y = canvas.get_rect().height  / 2
+		self.ccy = screen.get_rect().height / 2
+		self.ccx = screen.get_rect().width / 2
 		self.a = 0
+
+
 
 	def update(self):
 		if self.a == 1:
 			self.a = 0
 		else:
 			self.a = 1
-			self.x += 1
-		self.y += -1
+			self.x += 0
+		self.y += 0
 		return self.x, self.y
 
 
@@ -79,8 +82,8 @@ class Screen1:
 
 	def show(self):
 
-		left = player.x
-		top = player.y
+		left = player.y - player.ccy - 1
+		top = player.x - player.ccx + 1
 
 
 		h = screen.get_rect().height
@@ -130,22 +133,22 @@ auto_shoot = False
 run = True
 
 while run:
-	#x, y  = pygame.mouse.get_pos()
-
-	angle = math.degrees(math.atan2(-player.y, player.x))
+	x = pygame.mouse.get_pos()[0] - player.ccx
+	y = pygame.mouse.get_pos()[1] - player.ccy
+	angle = math.degrees(math.atan2(-y, x))
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
 		if event.type == pygame.MOUSEBUTTONUP:
-			pythag = float(math.sqrt(player.x ** 2 + player.y ** 2))
-			bullets.append(Bullet(player.x / pythag, player.y / pythag, screen.get_rect().height // 2, screen.get_rect().width // 2))
+			pythag = float(math.sqrt(x ** 2 + y ** 2))
+			bullets.append(Bullet(x / pythag, y / pythag, screen.get_rect().width // 2, screen.get_rect().height // 2))
 
 	screen.fill((255, 255, 255))
 	player.update()
 	place.show()
-	#for bullet in bullets:
-	#	bullet.update()
-	blitRotateCenter(screen, cannon, (400, 400), angle)
+	for bullet in bullets:
+		bullet.update()
+	blitRotateCenter(screen, cannon, ( player.ccx, player.ccy), angle)
 	pygame.display.update()
 	clock.tick(50)
 
