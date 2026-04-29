@@ -1,12 +1,13 @@
 # Version
 #0.00
 class VersionPF:
-	version = '0.03'
-	date = '26 Apr 26'
-	ver = 'try something else'
+	version = '0.04'
+	date = '27 Apr 26'
+	ver = 'canvas edges - Bullet change direction wall or edge and power'
 	text = 'Game - no edges'
 	'''
 	version
+	0.03 26 Apr 26 add you shoot any directiom
 	0.02 20 Apr 26 horizontal'
 	0.01 17 Apr 26 try 4
 	0.00 1 Apr 26 Games - start
@@ -45,14 +46,15 @@ class Bullet:
 		self.bullet_rect = self.image.get_rect()
 
 	def update(self):
-		self.x_loc += self.x_move
+		self.x_loc += self.x_move # this loc is canvas not screen
 		self.y_loc += self.y_move
-		self.bullet_rect.center = round(self.x_loc), round(self.y_loc)
+		xx, yy = convert(round(self.x_loc), round(self.y_loc))
+		self.bullet_rect.center = xx, yy #round(self.x_loc), round(self.y_loc) #wrong
 		rect = screen.blit(self.image, self.bullet_rect)
-		if not canvas.get_rect().contains(rect):
+		if self.x_loc > canvas.get_rect().width or self.y_loc > canvas.get_rect().h or self.x_loc < 0 or self.y_loc < 0:
 			pass
-		#	bullets.remove(self)
-
+			bullets.remove(self)
+			pass
 
 class Player:
 	def __init__(self):
@@ -73,7 +75,8 @@ class Player:
 		self.y += 0
 		return self.x, self.y
 
-
+def convert(xx, yy):
+	return canvas, (x, y)
 
 class Screen1:
 	def __init__(self):
@@ -141,14 +144,15 @@ while run:
 			run = False
 		if event.type == pygame.MOUSEBUTTONUP:
 			pythag = float(math.sqrt(x ** 2 + y ** 2))
-			bullets.append(Bullet(x / pythag, y / pythag, screen.get_rect().width // 2, screen.get_rect().height // 2))
+			bullets.append(Bullet(x / pythag, y / pythag, player.x, player.y)) # screen.get_rect().width // 2, screen.get_rect().height // 2))
 
 	screen.fill((255, 255, 255))
 	player.update()
-	place.show()
+
 	for bullet in bullets:
 		bullet.update()
 	blitRotateCenter(screen, cannon, ( player.ccx, player.ccy), angle)
+	place.show()
 	pygame.display.update()
 	clock.tick(50)
 
