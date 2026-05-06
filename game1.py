@@ -30,7 +30,7 @@ pygame.display.set_icon(icon)
 
 canvas = pygame.image.load("img/a.jpg").convert()
 canvas_org = pygame.transform.scale(canvas, (2000, 2000))
-canvas = canvas_org
+
 
 
 class Bullet:
@@ -55,34 +55,45 @@ class Bullet:
 			pass
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
+    def __init__(self, image, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.original_image = image
+        self.image = self.original_image
+        self.rect = self.image.get_rect(center = (x, y))
+        self.angle = 0
+    def update(self):
+        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.angle = (self.angle + 1) % 360
+
+
+
+class Player1:
 	def __init__(self):
-		self.x = canvas.get_rect().width / 2
-		self.y = canvas.get_rect().height / 2
-		self.ccy = screen.get_rect().height / 2
-		self.ccx = screen.get_rect().width / 2
+		a = canvas_org.width / 2
+		self.x = self.ccx = canvas_org.width / 2
+		self.y = self.ccy = canvas_org.height / 2
+		self.sx = screen.get_rect().width
+		self.sy = screen.get_rect().height
+
+		self.scx = screen.get_rect().width / 2
+		self.scy = screen.get_rect().height / 2
 		self.a = 0
 
-	def update(self):
-		if self.a == 1:
-			self.a = 0
-		else:
-			self.a = 1
-			self.x += 0
-		self.y += 0
-		return self.x, self.y
 
 
-def pause(milliseconds, allowEsc=True):
+
+def pause(milliseconds, allowesc=True):
 	keys = pygame.key.get_pressed()
 	current_time = pygame.time.get_ticks()
 	waittime = current_time + milliseconds
 	pygame.display.flip()
 
-	while not (current_time > waittime or (keys[pygame.K_ESCAPE] and allowEsc)):
+	while not (current_time > waittime or (keys[pygame.K_ESCAPE] and allowesc)):
 		pygame.event.clear()
 		keys = pygame.key.get_pressed()
-		if (keys[pygame.K_ESCAPE] and allowEsc):
+		if keys[pygame.K_ESCAPE] and allowesc:
 			pygame.quit()
 			sys.exit()
 		current_time = pygame.time.get_ticks()
@@ -92,19 +103,22 @@ class Screen1:
 	def __init__(self):
 		pass
 
-	def show(self):
+	def update(self):
+		pass
 
-		left = player.y - player.ccy - 1
-		top = player.x - player.ccx + 1
+	def show(self):
+		top = player1.x - player1.scx
+		left = player1.y - player1.scy
+
+
 
 		h = screen.get_rect().height
 		w = screen.get_rect().width
-
 		if top + screen.get_rect().height == canvas.get_rect().height:
-			player.y = top = 0
+			player1.y = top = 0
 
 		if left + screen.get_rect().width == canvas.get_rect().width:
-			player.x = left = 0
+			player1.x = left = 0
 
 		if top == -1:
 			player.y = top = canvas.get_rect().height - screen.get_rect().height - 1
@@ -128,8 +142,18 @@ Q: How do I keep the center of a rotated image in place in pygame
 ANS: To keep the center of a rotated image in place, you need to get the center coordinate of the original image’s rectangle and apply that same center coordinate to the rectangle of the newly rotated image before blitting.
 '''
 
-player = Player()
+canvas_wall = canvas_org.copy()
+#add walll here
+
+
+player1 = Player1()
 place = Screen1()
+
+
+surface = pygame.Surface((100, 50), pygame.SRCALPHA)
+surface.fill("black")
+player = Player(surface, *screen.get_rect().center)
+all_sprites = pygame.sprite.Group(player)
 
 cannon = pygame.Surface((50, 50), pygame.SRCALPHA)
 pygame.draw.rect(cannon, (100, 100, 100), (30, 17, 25, 15))
@@ -142,24 +166,30 @@ auto_shoot = False
 run = True
 
 while run:
-	x = pygame.mouse.get_pos()[0] - player.ccx
-	y = pygame.mouse.get_pos()[1] - player.ccy
+	canvas = canvas_wall.copy()
+	a = pygame.mouse.get_pos()[0]
+	x = pygame.mouse.get_pos()[0] - player1.scx
+	y = pygame.mouse.get_pos()[1] - player1.scy
 	angle = math.degrees(math.atan2(-y, x))
+	if  a != 0:
+		pass
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			run = False
-		if event.type == pygame.MOUSEBUTTONUP:
+		if event.type == pygame.MOUSEBUTTONUP and a != 0:
 			pythag = float(math.sqrt(x ** 2 + y ** 2))
-			bullets.append(Bullet(x / pythag, y / pythag, player.x,
-			                      player.y))  # screen.get_rect().width // 2, screen.get_rect().height // 2))
+			bullets.append(Bullet(x / pythag, y / pythag, screen.get_rect().width // 2, screen.get_rect().height // 2))
 
 	screen.fill((255, 255, 255))
+
 	player.update()
 
 	for bullet in bullets:
 		bullet.update()
-	blitRotateCenter(screen, cannon, (player.ccx, player.ccy), angle)
+
+
 	place.show()
+	all_sprites.update()
 	pygame.display.flip()
 	clock.tick(50)
 
