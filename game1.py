@@ -1,16 +1,12 @@
 class VersionPF:
-	version = '0.04'
-	date = '7 May 26'
-	ver = 'different bullets and player'
+	version = '0.01'
+	date = '9 May 26'
+	ver = 'different type of game'
 	text = 'Game - no edges'
 	'''
 	version
-	--- 8 May 26 GAVE UP
-	0.04 1 May 26 different bullet
-	0.03 26 Apr 26 add you shoot any direction
-	0.02 20 Apr 26 horizontal'
-	0.01 17 Apr 26 try 4
-	0.00 1 Apr 26 Games - start
+	0.01 9 May 26 different type of game
+	0.00 8 May 26 Games - start
 	'''
 
 
@@ -18,13 +14,163 @@ import pygame
 import math
 import sys
 
-pygame.init()
-screen = pygame.display.set_mode((600, 600))
-screen.fill((255, 255, 255))
+# Source - https://stackoverflow.com/q/61106297
+# Posted by kovels
+
+class Game:
+	def __init__(self):
+		self.run = True
+		self.screen_width = 1060
+		self.screen_height = 798
+
+		self.image = pygame.Surface((10, 10))
+		self.image.fill(pygame.Color("whitesmoke"))
+
+		self.image = pygame.transform.scale(self.image, (self.screen_width, self.screen_height))
+		self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+
+		self.clock = pygame.time.Clock()
+
+		VersionPF()
+		pygame.display.set_caption(
+			'Version ' + VersionPF.version + ' ' + VersionPF.date + '  ' + VersionPF.text + ', ' + VersionPF.ver)
+		pygame.display.set_allow_screensaver(True)
+		icon = pygame.image.load("img/icon.png")
+		pygame.display.set_icon(icon)
+
+		# all_sprites is used to update and draw all sprites together.
+		self.all_sprites = pygame.sprite.Group()
+
+		# for collision detection with enemies.
+		self.bullet_group = pygame.sprite.Group()
+
+		self.tank = Tank()
+		self.all_sprites.add(self.tank)
+
+		bullet = Bullet(self.tank)
+		self.bullet_group.add(bullet)
+		self.all_sprites.add(bullet)
+
+	def handle_events(self):
+		keys = pygame.key.get_pressed()
+		self.tank.handle_events()
+		if keys[pygame.K_UP]:
+			self.tank.move(-5)
+		if keys[pygame.K_DOWN]:
+			self.tank.move(5)
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				self.run = False
+			elif event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					self.run = False
+				if event.key == pygame.K_SPACE:
+					bullet = Bullet(self.tank)
+					self.bullet_group.add(bullet)
+					self.all_sprites.add(bullet)
+
+	def update(self):
+		# Calls `update` methods of all contained sprites.
+		self.all_sprites.update()
+
+	def draw(self):
+		self.screen.blit(self.image, (0, 0))
+		self.all_sprites.draw(self.screen)  # Draw the contained sprites.
+		pygame.display.update()
+
+	def remov(self, a):
+		self.all_sprites.remove(a)
+
+class Tank:
+	def __init__(self):
+class Tank(pygame.sprite.Sprite):
+
+	def __init__(self):
+		pygame.sprite.Sprite.__init__(self)
+
+		self.image = cannon()
+		# self.image = pygame.image.load("sprites/player/player_tank.png")
+		self.org_image = self.image.copy()
+
+		# A nicer way to set the start pos with `get_rect`.
+		self.rect = self.image.get_rect(center=(70, 600))
+
+		self.angle = 90
+		self.direction = pygame.Vector2(1, 0)
+		self.pos = pygame.Vector2(self.rect.center)
+
+	def handle_events(self):
+		pressed = pygame.key.get_pressed()
+		if pressed[pygame.K_LEFT]:
+			self.angle += 1
+		if pressed[pygame.K_RIGHT]:
+			self.angle -= 2
+
+		self.direction = pygame.Vector2(1, 0).rotate(-self.angle)
+		self.image = pygame.transform.rotate(self.org_image, self.angle)
+		self.rect = self.image.get_rect(center=self.rect.center)
+
+	def move(self, velocity):
+		direction = pygame.Vector2(0, velocity).rotate(-self.angle)
+		self.pos += direction
+		self.rect.center = round(self.pos[0]), round(self.pos[1])
 
 
+class Bullet(pygame.sprite.Sprite):
 
+	def __init__(self, tank):
+		pygame.sprite.Sprite.__init__(self)
+		self.angle = tank.angle - 90
+		self.image = pygame.Surface((8,8))
+		self.image.fill((255, 0, 0))
+		#self.image = pygame.transform.rotate(self.image, self.angle)
+		self.rect = self.image.get_rect()
+		self.pos = pygame.Vector2(tank.pos)
+		self.rect.center = round(self.pos.x), round(self.pos.y)
+		self.direction = pygame.Vector2(0, -10).rotate(-self.angle)
+		self.power = 100
 
+	def update(self):
+		if self.power <= 0:
+			game.remov(self)
+
+		self.pos += self.direction
+		self.rect.center = round(self.pos.x), round(self.pos.y)
+
+		if self.rect.left < 0:
+			self.direction.x *= -1
+			self.rect.left = 0
+			self.pos.x = self.rect.centerx
+			self.power -= 10
+		if self.rect.right > 1060:
+			self.direction.x *= -1
+			self.rect.right = 1060
+			self.pos.x = self.rect.centerx
+			self.power -= 10
+		if self.rect.top < 0:
+			self.direction.y *= -1
+			self.rect.top = 0
+			self.pos.y = self.rect.centery
+			self.power -= 10
+		if self.rect.bottom > 798:
+			self.direction.y *= -1
+			self.rect.right = 798
+			self.pos.y = self.rect.centery
+			self.power -= 10
+		#if self.power >= 0:
+
+def main():
+	pygame.init()
+	pygame.display.set_caption('Target Game')
+	clock = pygame.time.Clock()
+	game = Game()
+
+	while game.run:
+		game.handle_events()
+		game.update()
+		game.draw()
+		clock.tick(60)
 
 
 def pause(milliseconds, allowesc=True):
@@ -41,11 +187,15 @@ def pause(milliseconds, allowesc=True):
 			sys.exit()
 		current_time = pygame.time.get_ticks()
 
-class make_cannon:
+
+def cannon():
 	cannon = pygame.Surface((50, 50), pygame.SRCALPHA)
 	pygame.draw.rect(cannon, (100, 100, 100), (30, 17, 25, 15))
 	pygame.draw.circle(cannon, (82, 219, 255), (25, 25), 15)
+	return cannon
 
 
-pygame.quit()
-exit()
+if __name__ == '__main__':
+	main()
+	pygame.quit()
+	sys.exit()
