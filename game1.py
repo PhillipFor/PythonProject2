@@ -1,11 +1,12 @@
 class VersionPF:
-	version = '0.01'
-	date = '9 May 26'
-	ver = 'different type of game'
+	version = '0.02'
+	date = '10 May 26'
+	ver = 'center Tank, let it move some X spaces'
 	text = 'Game - no edges'
 	'''
 	version
-	0.01 9 May 26 different type of game
+	0.02 11 May 26 center Tank, let it move some X spaces
+	0.01 10 May 26 bullet remove
 	0.00 8 May 26 Games - start
 	'''
 
@@ -16,6 +17,12 @@ import sys
 
 # Source - https://stackoverflow.com/q/61106297
 # Posted by kovels
+
+def cannon():
+	image = pygame.Surface((50, 50), pygame.SRCALPHA)
+	pygame.draw.rect(image, (100, 100, 100), (30, 17, 25, 15))
+	pygame.draw.circle(image, (82, 219, 255), (25, 25), 15)
+	return image
 
 class Game:
 	def __init__(self):
@@ -47,9 +54,6 @@ class Game:
 		self.tank = Tank()
 		self.all_sprites.add(self.tank)
 
-		bullet = Bullet(self.tank)
-		self.bullet_group.add(bullet)
-		self.all_sprites.add(bullet)
 
 	def handle_events(self):
 		keys = pygame.key.get_pressed()
@@ -70,28 +74,25 @@ class Game:
 					self.bullet_group.add(bullet)
 					self.all_sprites.add(bullet)
 
+
 	def update(self):
 		# Calls `update` methods of all contained sprites.
 		self.all_sprites.update()
+
 
 	def draw(self):
 		self.screen.blit(self.image, (0, 0))
 		self.all_sprites.draw(self.screen)  # Draw the contained sprites.
 		pygame.display.update()
 
-	def remov(self, a):
-		self.all_sprites.remove(a)
 
-class Tank:
-	def __init__(self):
 class Tank(pygame.sprite.Sprite):
 
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
 
 		self.image = cannon()
-		# self.image = pygame.image.load("sprites/player/player_tank.png")
-		self.org_image = self.image.copy()
+		self.org_image = self.image
 
 		# A nicer way to set the start pos with `get_rect`.
 		self.rect = self.image.get_rect(center=(70, 600))
@@ -118,7 +119,6 @@ class Tank(pygame.sprite.Sprite):
 
 
 class Bullet(pygame.sprite.Sprite):
-
 	def __init__(self, tank):
 		pygame.sprite.Sprite.__init__(self)
 		self.angle = tank.angle - 90
@@ -132,9 +132,6 @@ class Bullet(pygame.sprite.Sprite):
 		self.power = 100
 
 	def update(self):
-		if self.power <= 0:
-			game.remov(self)
-
 		self.pos += self.direction
 		self.rect.center = round(self.pos.x), round(self.pos.y)
 
@@ -158,13 +155,12 @@ class Bullet(pygame.sprite.Sprite):
 			self.rect.right = 798
 			self.pos.y = self.rect.centery
 			self.power -= 10
-		#if self.power >= 0:
+		if self.power <= 0:
+			game.all_sprites.remove(self)
 
+game = Game()
 def main():
-	pygame.init()
-	pygame.display.set_caption('Target Game')
 	clock = pygame.time.Clock()
-	game = Game()
 
 	while game.run:
 		game.handle_events()
@@ -188,11 +184,6 @@ def pause(milliseconds, allowesc=True):
 		current_time = pygame.time.get_ticks()
 
 
-def cannon():
-	cannon = pygame.Surface((50, 50), pygame.SRCALPHA)
-	pygame.draw.rect(cannon, (100, 100, 100), (30, 17, 25, 15))
-	pygame.draw.circle(cannon, (82, 219, 255), (25, 25), 15)
-	return cannon
 
 
 if __name__ == '__main__':
