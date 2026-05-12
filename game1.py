@@ -1,11 +1,12 @@
 class VersionPF:
 	version = '0.02'
-	date = '10 May 26'
-	ver = 'center Tank, let it move some X spaces'
+	date = '12 May 26'
+	ver = 'let it move some X spaces'
 	text = 'Game - no edges'
 	'''
 	version
-	0.02 11 May 26 center Tank, let it move some X spaces
+	0.03 12 May 26 let it move some X spaces
+	0.02 11 May 26 center Tank
 	0.01 10 May 26 bullet remove
 	0.00 8 May 26 Games - start
 	'''
@@ -20,7 +21,7 @@ import sys
 
 def cannon():
 	image = pygame.Surface((50, 50), pygame.SRCALPHA)
-	pygame.draw.rect(image, (100, 100, 100), (30, 17, 25, 15))
+	pygame.draw.rect(image, (100, 100, 100),  (20,0, 10, 20) )            #(30, 17, 25, 15))
 	pygame.draw.circle(image, (82, 219, 255), (25, 25), 15)
 	return image
 
@@ -59,9 +60,9 @@ class Game:
 		keys = pygame.key.get_pressed()
 		self.tank.handle_events()
 		if keys[pygame.K_UP]:
-			self.tank.move(-5)
+			self.tank.move(-1)
 		if keys[pygame.K_DOWN]:
-			self.tank.move(5)
+			self.tank.move(1)
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -95,9 +96,10 @@ class Tank(pygame.sprite.Sprite):
 		self.org_image = self.image
 
 		# A nicer way to set the start pos with `get_rect`.
-		self.rect = self.image.get_rect(center=(70, 600))
+		#self.rect = self.image.get_rect(center=(70, 600))
+		self.rect = self.image.get_rect(center=pygame.display.get_surface().get_rect().center)
 
-		self.angle = 90
+		self.angle = 0
 		self.direction = pygame.Vector2(1, 0)
 		self.pos = pygame.Vector2(self.rect.center)
 
@@ -106,7 +108,7 @@ class Tank(pygame.sprite.Sprite):
 		if pressed[pygame.K_LEFT]:
 			self.angle += 1
 		if pressed[pygame.K_RIGHT]:
-			self.angle -= 2
+			self.angle -= .5
 
 		self.direction = pygame.Vector2(1, 0).rotate(-self.angle)
 		self.image = pygame.transform.rotate(self.org_image, self.angle)
@@ -121,7 +123,7 @@ class Tank(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
 	def __init__(self, tank):
 		pygame.sprite.Sprite.__init__(self)
-		self.angle = tank.angle - 90
+		self.angle = tank.angle
 		self.image = pygame.Surface((8,8))
 		self.image.fill((255, 0, 0))
 		#self.image = pygame.transform.rotate(self.image, self.angle)
@@ -129,32 +131,34 @@ class Bullet(pygame.sprite.Sprite):
 		self.pos = pygame.Vector2(tank.pos)
 		self.rect.center = round(self.pos.x), round(self.pos.y)
 		self.direction = pygame.Vector2(0, -10).rotate(-self.angle)
-		self.power = 100
+		self.power = 1000
 
 	def update(self):
 		self.pos += self.direction
 		self.rect.center = round(self.pos.x), round(self.pos.y)
 
+		self.power -= 1
+
 		if self.rect.left < 0:
 			self.direction.x *= -1
 			self.rect.left = 0
 			self.pos.x = self.rect.centerx
-			self.power -= 10
+			self.power -= 1
 		if self.rect.right > 1060:
 			self.direction.x *= -1
 			self.rect.right = 1060
 			self.pos.x = self.rect.centerx
-			self.power -= 10
+			self.power -= 1
 		if self.rect.top < 0:
 			self.direction.y *= -1
 			self.rect.top = 0
 			self.pos.y = self.rect.centery
-			self.power -= 10
+			self.power -= 1
 		if self.rect.bottom > 798:
 			self.direction.y *= -1
 			self.rect.right = 798
 			self.pos.y = self.rect.centery
-			self.power -= 10
+			self.power -= 1
 		if self.power <= 0:
 			game.all_sprites.remove(self)
 
@@ -172,10 +176,10 @@ def main():
 def pause(milliseconds, allowesc=True):
 	keys = pygame.key.get_pressed()
 	current_time = pygame.time.get_ticks()
-	waittime = current_time + milliseconds
+	wait_time = current_time + milliseconds
 	pygame.display.flip()
 
-	while not (current_time > waittime or (keys[pygame.K_ESCAPE] and allowesc)):
+	while not (current_time > wait_time or (keys[pygame.K_ESCAPE] and allowesc)):
 		pygame.event.clear()
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_ESCAPE] and allowesc:
