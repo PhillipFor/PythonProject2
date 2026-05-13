@@ -71,9 +71,10 @@ class Game:
 				if event.key == pygame.K_ESCAPE:
 					self.run = False
 				if event.key == pygame.K_SPACE:
-					bullet = Bullet(self.tank)
-					self.bullet_group.add(bullet)
-					self.all_sprites.add(bullet)
+					if len(self.bullet_group.sprites()) <= 10:
+						bullet = Bullet(self.tank)
+						self.bullet_group.add(bullet)
+						self.all_sprites.add(bullet)
 
 
 	def update(self):
@@ -102,23 +103,28 @@ class Tank(pygame.sprite.Sprite):
 		self.angle = 0
 		self.direction = pygame.Vector2(1, 0)
 		self.pos = pygame.Vector2(self.rect.center)
+		# x 539 y = 399
+		pass
 
 	def handle_events(self):
 		pressed = pygame.key.get_pressed()
 		if pressed[pygame.K_LEFT]:
 			self.angle += 1
 		if pressed[pygame.K_RIGHT]:
-			self.angle -= .5
+			self.angle -= 1
 
 		self.direction = pygame.Vector2(1, 0).rotate(-self.angle)
 		self.image = pygame.transform.rotate(self.org_image, self.angle)
 		self.rect = self.image.get_rect(center=self.rect.center)
+		pass
 
 	def move(self, velocity):
 		direction = pygame.Vector2(0, velocity).rotate(-self.angle)
 		self.pos += direction
 		self.rect.center = round(self.pos[0]), round(self.pos[1])
-
+		a = round(self.pos[0])-539
+		b = round(self.pos[1])-401
+		pass
 
 class Bullet(pygame.sprite.Sprite):
 	def __init__(self, tank):
@@ -161,6 +167,8 @@ class Bullet(pygame.sprite.Sprite):
 			self.power -= 1
 		if self.power <= 0:
 			game.all_sprites.remove(self)
+			game.bullet_group.remove(self)
+
 
 game = Game()
 def main():
